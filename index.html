@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little Surprise 💌</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #fff8f3;
+    font-family: Georgia, "Times New Roman", serif;
+    color: #8b6250;
+  }
+
+  .scene {
+    width: min(92vw, 620px);
+    height: min(92vh, 720px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .hint {
+    margin-top: 28px;
+    font-size: clamp(16px, 4vw, 20px);
+    letter-spacing: .5px;
+    transition: opacity .4s ease;
+  }
+
+  .hint.hidden { opacity: 0; }
+
+  .envelope-wrap {
+    width: min(82vw, 500px);
+    aspect-ratio: 1.55 / 1;
+    position: relative;
+    perspective: 1000px;
+    cursor: pointer;
+    filter: drop-shadow(0 18px 18px rgba(139, 98, 80, .15));
+  }
+
+  .envelope {
+    position: absolute;
+    inset: 0;
+    background: #f5cbb8;
+    border-radius: 3px;
+    overflow: visible;
+  }
+
+  /* back of envelope */
+  .envelope::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #f2c3ae;
+    clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
+    z-index: 1;
+  }
+
+  /* letter */
+  .letter {
+    position: absolute;
+    left: 8%;
+    width: 84%;
+    height: 84%;
+    bottom: 7%;
+    background: #fffdf9;
+    border: 1px solid #efd8cc;
+    border-radius: 2px;
+    z-index: 2;
+    transform: translateY(5%);
+    transition: transform 1s cubic-bezier(.2,.85,.25,1), z-index 0s .45s;
+    box-shadow: 0 8px 20px rgba(139,98,80,.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px;
+  }
+
+  .letter-content {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .55s ease .65s, transform .55s ease .65s;
+    width: 100%;
+  }
+
+  .letter .tiny-heart {
+    font-size: 25px;
+    margin-bottom: 10px;
+  }
+
+  .letter h1 {
+    margin: 0 0 12px;
+    font-size: clamp(26px, 6vw, 43px);
+    color: #df826e;
+    font-weight: 500;
+    line-height: 1.15;
+  }
+
+  .letter p {
+    margin: 0;
+    font-size: clamp(22px, 5vw, 34px);
+    color: #765345;
+    line-height: 1.2;
+  }
+
+  /* front pocket */
+  .front {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: #f5cbb8;
+    clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+  }
+
+  /* flap */
+  .flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 63%;
+    z-index: 5;
+    background: #f7d0be;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: 50% 0%;
+    transform: rotateX(0deg);
+    transition: transform 1s cubic-bezier(.2,.8,.2,1);
+    backface-visibility: visible;
+  }
+
+  .seal {
+    position: absolute;
+    z-index: 6;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -10%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e7b56c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 23px;
+    box-shadow: 0 3px 8px rgba(120,80,40,.18);
+    transition: opacity .35s ease, transform .5s ease;
+  }
+
+  .sparkles {
+    position: absolute;
+    inset: -15%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .4s ease;
+    z-index: 10;
+  }
+
+  .sparkles span {
+    position: absolute;
+    font-size: 20px;
+    animation: float 2.8s ease-in-out infinite;
+  }
+
+  .sparkles span:nth-child(1) { left: 8%; top: 20%; }
+  .sparkles span:nth-child(2) { right: 8%; top: 25%; animation-delay: .5s; }
+  .sparkles span:nth-child(3) { left: 15%; bottom: 18%; animation-delay: 1s; }
+  .sparkles span:nth-child(4) { right: 15%; bottom: 15%; animation-delay: 1.4s; }
+
+  @keyframes float {
+    50% { transform: translateY(-12px) rotate(10deg); }
+  }
+
+  .open .flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+  }
+
+  .open .letter {
+    transform: translateY(-38%);
+    z-index: 3;
+    transition-delay: .25s;
+  }
+
+  .open .letter-content {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .open .seal {
+    opacity: 0;
+    transform: translate(-50%, -10%) scale(.5);
+  }
+
+  .open .sparkles {
+    opacity: 1;
+  }
+
+  @media (max-width: 420px) {
+    .scene { height: 80vh; }
+    .letter { padding: 18px; }
+    .seal { width: 38px; height: 38px; font-size: 19px; }
+  }
+</style>
+</head>
+
+<body>
+  <main class="scene">
+    <div class="envelope-wrap" id="envelope" aria-label="Tap to open the envelope" role="button" tabindex="0">
+      <div class="sparkles" aria-hidden="true">
+        <span>♡</span>
+        <span>✦</span>
+        <span>♡</span>
+        <span>✧</span>
+      </div>
+
+      <div class="envelope">
+        <div class="letter">
+          <div class="letter-content">
+            <div class="tiny-heart">♡</div>
+            <h1>Congratulations!</h1>
+            <p>you're going to be a khala! ♡</p>
+          </div>
+        </div>
+
+        <div class="front"></div>
+        <div class="flap"></div>
+        <div class="seal">♥</div>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">Tap the envelope to open ♡</div>
+  </main>
+
+<script>
+  const envelope = document.getElementById("envelope");
+  const hint = document.getElementById("hint");
+
+  function openEnvelope() {
+    envelope.classList.add("open");
+    hint.classList.add("hidden");
+  }
+
+  envelope.addEventListener("click", openEnvelope);
+  envelope.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openEnvelope();
+    }
+  });
+</script>
+</body>
+</html>
